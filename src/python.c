@@ -2,7 +2,10 @@
 //#include <limits.h>
 #include <Python.h>
 
+
 extern void show_help(char *, int pgm_id);
+int query (int argc, char *argv[]);
+int main (int argc, char *argv[]);
 
 typedef struct {
 	PyObject_HEAD
@@ -75,7 +78,8 @@ static PyObject* search(PyObject *self, PyObject *args, PyObject *kwargs){
 	if(!PyArg_ParseTuple(args, "s", kwlist, &seq_char )) {
 		return NULL;
 	}
-	show_help("hello",2);
+	char *argv[] = { "./dummy", "-b", "1", "/Users/katelyn/develop/fasta36/prot.faa", "/Users/katelyn/develop/fasta36/10702.1.fas", NULL };
+	main(5, argv);
 	return Py_BuildValue("[sf]", "hello", 42.0);
 }
 
