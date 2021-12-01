@@ -511,15 +511,6 @@ query (int argc, char *argv[])
   m_msg.quiet = 1;
 #endif
 
-#ifdef MPI_SRC
-  MPI_Init(&argc, &argv);
-  MPI_Comm_rank(MPI_COMM_WORLD,&mpi_tid);
-  if (mpi_tid > 0) {
-    work_comp(mpi_tid); 
-    MPI_Finalize();
-    exit(0);
-  }
-#endif
 
 #ifdef PGM_DOC
   /* document command line */

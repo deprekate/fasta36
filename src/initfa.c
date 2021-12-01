@@ -885,6 +885,8 @@ f_initenv (struct mngmsg *m_msp, struct pstruct *ppst, unsigned char **aa0) {
   SAFE_STRNCPY(m_msp->f_id0,m_msg_def.f_id0,sizeof(m_msp->f_id0));
   SAFE_STRNCPY(m_msp->f_id1,m_msg_def.f_id1,sizeof(m_msp->f_id1));
   SAFE_STRNCPY (m_msp->label, m_msg_def.label, sizeof(m_msp->label));
+  printf("str: %s\n", m_msg_def.label);
+  printf("str: %s\n", m_msg_def.alabel);
   SAFE_STRNCPY(m_msp->alabel, m_msg_def.alabel, sizeof(m_msp->alabel));
 
 #if !defined(SSEARCH) && !defined(GGSEARCH) && !defined(GLSEARCH) && !defined(LALIGN)

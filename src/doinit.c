@@ -202,14 +202,12 @@ void initenv (int argc, char **argv, struct mngmsg *m_msp,
 #ifdef WIN32
   SYSTEM_INFO siSysInfo;
 #endif
-
    /* options for all search functions */
    /* char   *g_optstr = "b:BC:d:DE:F:HiK:l:Lm:N:O:QqR:T:v:V:w:W:X:Z:"; */
 
    char g_optstring[MAX_STR];
    char f_optstring[MAX_STR];
    char optstring[MAX_STR];
-
    /* help functions exit(); try first */
    if (argc == 1) {
      show_help(m_msp->pgm_name, ppst->pgm_id);
