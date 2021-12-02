@@ -544,7 +544,6 @@ query (int argc, char *argv[])
 
   /* initialize values in comp_lib9 that are thread/serial specific */
   fset_vars(&m_msg, &pst);
-
   /* second initialization - get commmand line arguments */
   initenv (argc, argv, &m_msg, &pst, &aa0[0]);
 
@@ -582,7 +581,7 @@ query (int argc, char *argv[])
   aa1save++;
 
   /* print argv_line, program, version */
-  print_header1(stdout, argv_line, &m_msg, &pst);
+  //print_header1(stdout, argv_line, &m_msg, &pst);
 
   /* get query information */
   if (m_msg.tname[0] == '\0') {
@@ -601,7 +600,6 @@ query (int argc, char *argv[])
   /* (1) open the query library; 
      (2) get a sequence;
      (3) check for annotations */
-
   /* we need a q_lib_p before opening the library */
   if ((q_lib_p = (struct lib_struct *)calloc(1,sizeof(struct lib_struct)))==NULL) {
     s_abort(" cannot allocate q_lib_p","");
@@ -1212,18 +1210,20 @@ query (int argc, char *argv[])
     }
 
     /* header2 print Query:, Annotation:, Library: */
-    print_header2(stdout, qlib, info_qlabel, aa0, &m_msg, &pst, info_lib_range_p);
+    //print_header2(stdout, qlib, info_qlabel, aa0, &m_msg, &pst, info_lib_range_p);
 
+	/*
     if (m_msg.std_output) {
       prhist (stdout, &m_msg, &pst, m_msg.hist, nstats, sstats, m_msg.ldb,
 	      (pst.zsflag > 20? hist2.stat_info:NULL),info_lib_range_p,
 	      info_gstring2p, info_hstring_p, tscan-tprev) ;
 
-      /* print annot header if it cannot be changed by script */
+      // print annot header if it cannot be changed by script 
       if (!(m_msg.markx & (MX_MBLAST2+MX_M8OUT)) && 
 	  !(m_msg.annot1_sname[0] || m_msg.annot0_sname[0]))
 	print_annot_header(stdout, &m_msg);
     }
+  	*/
     ttscan += tscan-tprev;
 
     /* check to see if there are alternate output files */
@@ -1366,7 +1366,7 @@ query (int argc, char *argv[])
       pre_load_best(aa1save, maxn, &bestp_arr[m_msg.nskip], m_msg.nshow, &m_msg, pst.debug_lib);
 
       if ((link_lib_str = build_link_data(&link_lib_file, &m_msg, bestp_arr,pst.debug_lib))==NULL) {
-	goto no_links;
+          goto no_links;
       };
 
       /* get a list of files */
@@ -1381,28 +1381,29 @@ query (int argc, char *argv[])
 	 the link search have been saved (only necessary if buffers
 	 may be reused) */
       if (getlib_info->use_memory <= 0 && getlib_info->lib_list_p->m_file_p->get_mmap_chain==NULL) {
-	for (i=0; i < m_msg.nshow; i++) {
-	  if (bestp_arr[i]->seq->aa1b != NULL) {
-	    preserve_seq2(bestp_arr[i],best_seqs, best_mseqs, best);
-	    if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
-	      fprintf(stderr,"*** error [%s:%d] -n1:%d != seq->n1:%d\n",
-		      __FILE__, __LINE__, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
+    	for (i=0; i < m_msg.nshow; i++) {
+	      if (bestp_arr[i]->seq->aa1b != NULL) {
+	        preserve_seq2(bestp_arr[i],best_seqs, best_mseqs, best);
+	        if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
+	          fprintf(stderr,"*** error [%s:%d] -n1:%d != seq->n1:%d\n",
+		          __FILE__, __LINE__, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
+	        }
+	      }
 	    }
-	  }
-	}
       }
-
       /* calculate scores for the sequences */
 #if defined(COMP_THR) || defined(PCOMPLIB)
     for (i=0; i<m_bufi.max_work_buf; i++) {
-      memset(lib_buf2_list[i].buf2_data,0,
-	     (size_t)(m_bufi.max_buf2_res+1)*sizeof(struct buf2_data_s));
-      lib_buf2_list[i].hdr.buf2_cnt=
-	lib_buf2_list[i].hdr.have_results=
-	lib_buf2_list[i].hdr.have_best_save = 
-	lib_buf2_list[i].hdr.aa1b_used = 0;
-    }
+        memset(lib_buf2_list[i].buf2_data,0,
+	         (size_t)(m_bufi.max_buf2_res+1)*sizeof(struct buf2_data_s));
+        lib_buf2_list[i].hdr.buf2_cnt=
+	        lib_buf2_list[i].hdr.have_results=
+	        lib_buf2_list[i].hdr.have_best_save = 
+	        lib_buf2_list[i].hdr.aa1b_used = 0;
+     }
     num_reader_bufs = m_bufi.max_work_buf;
+
+
 #endif
 
 #if defined(COMP_THR) || defined(PCOMPLIB)
@@ -1427,10 +1428,10 @@ query (int argc, char *argv[])
 #ifdef DEBUG
       /* check for bestp_arr corruption */
       for (i=0; i<m_msg.nshow; i++) {
-	if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
-	  fprintf(stderr,"*** error [%s:%d] : n1 conflict[%d]: n1: %d != seq->n1: %d\n",
-		  __FILE__, __LINE__, i, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
-	}
+	      if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
+	          fprintf(stderr,"*** error [%s:%d] : n1 conflict[%d]: n1: %d != seq->n1: %d\n",
+		              __FILE__, __LINE__, i, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
+	      }
       }
 #endif
       /* need to resort results, and re-check how many should be displayed */
@@ -1439,48 +1440,47 @@ query (int argc, char *argv[])
 #ifdef DEBUG
       /* check for bestp_arr corruption */
       for (i=0; i<m_msg.nshow; i++) {
-	if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
-	  fprintf(stderr,"*** error [%s:%d] : n1 conflict[%d]: n1: %d != seq->n1: %d\n",
-		  __FILE__, __LINE__, i, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
-	}
+	      if (bestp_arr[i]->n1 != bestp_arr[i]->seq->n1) {
+	          fprintf(stderr,"*** error [%s:%d] : n1 conflict[%d]: n1: %d != seq->n1: %d\n",
+		              __FILE__, __LINE__, i, bestp_arr[i]->n1, bestp_arr[i]->seq->n1);
+	      }
       }
 #endif
 
       if (pst.zsflag >= 0) {
-	/* skip entries if -F e_low specified */
-	for (i=0; i<nbest && bestp_arr[i]->rst.escore < m_msg.e_low; i++) {};
-	m_msg.nskip = i;
+	      /* skip entries if -F e_low specified */
+	      for (i=0; i<nbest && bestp_arr[i]->rst.escore < m_msg.e_low; i++) {};
+	          m_msg.nskip = i;
       }
       else {
-	/* no statistics, just use the same score */
-	m_msg.nskip = 0;
+	      /* no statistics, just use the same score */
+	      m_msg.nskip = 0;
       }
 
       if (m_msg.quiet || m_msg.tot_markx & MX_M9SUMM) {
 
-	/* to determine how many sequences to re-align (either for
-	   do_opt() or calc_id() we need to modify m_msg.mshow to get
-	   the correct number of alignments */
+	      /* to determine how many sequences to re-align (either for
+	         do_opt() or calc_id() we need to modify m_msg.mshow to get
+	         the correct number of alignments */
 
-	if (pst.zsflag >= 0) {	/* do we have e_values? */
-	  for (i=m_msg.nskip; i<nbest && bestp_arr[i]->rst.escore < m_msg.e_cut; i++) {}
+	      if (pst.zsflag >= 0) {	/* do we have e_values? */
+	          for (i=m_msg.nskip; i<nbest && bestp_arr[i]->rst.escore < m_msg.e_cut; i++) {}
 
-	  if (m_msg.mshow_set != 1) {
-	    m_msg.nshow = min(i - m_msg.nskip, nbest-m_msg.nskip);
-	  }
-	  else {
-	    if (m_msg.mshow_min) {	/* must show at least m_msg.mshow results */
-	      m_msg.nshow = max(m_msg.mshow, i-m_msg.nskip);
-	    }
-	    else {	/* limit by e_cut */
-	      m_msg.nshow = min(m_msg.mshow, i-m_msg.nskip);
-	    }
-	  }
-	}
+	          if (m_msg.mshow_set != 1) {
+	              m_msg.nshow = min(i - m_msg.nskip, nbest-m_msg.nskip);
+	          }
+	          else {
+	              if (m_msg.mshow_min) {	/* must show at least m_msg.mshow results */
+	                  m_msg.nshow = max(m_msg.mshow, i-m_msg.nskip);
+	              }
+	              else {	/* limit by e_cut */
+	                  m_msg.nshow = min(m_msg.mshow, i-m_msg.nskip);
+	              }
+	          }
+	      }
       }
     }
     /* done with -e link_lname */
-
   no_links:
     /* **************************************************************** */
     /* if we need alignment info now, pre-load and pre-calculate it     */
@@ -1549,11 +1549,12 @@ query (int argc, char *argv[])
     /* BLAST header ouput: Database:\n %ld sequences; %ld total letters */
     /*                     Query: %s length=%d                          */
     /* **************************************************************** */
-    print_header3(stdout, qlib, &m_msg, &pst);
-
+    //print_header3(stdout, qlib, &m_msg, &pst);
+	printf("var: %f\n", bestp_arr[m_msg.nskip]->percent);
     showbest(stdout, aa0, aa1save, maxn, &bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
-	     qtt.entries, &m_msg, &pst,m_msg.db, info_gstring2p, f_str);
+	     qtt.entries, &m_msg, &pst, m_msg.db, info_gstring2p, f_str);
 
+  	printf("HERE\n") ; exit(0);
     m_msp_to_markx(&markx_save, &m_msg);
     t_quiet = m_msg.quiet;
     m_msg.quiet = -1;	/* should guarantee 1..m_msg.nshow shown */

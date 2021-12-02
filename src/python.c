@@ -78,7 +78,7 @@ static PyObject* search(PyObject *self, PyObject *args, PyObject *kwargs){
 	if(!PyArg_ParseTuple(args, "s", kwlist, &seq_char )) {
 		return NULL;
 	}
-	char *argv[] = { "./dummy", "-b", "1", "/Users/katelyn/develop/fasta36/prot.faa", "/Users/katelyn/develop/fasta36/10702.1.fas", NULL };
+	char *argv[] = { "./dummy", "-b", "2", "/Users/katelyn/develop/fasta36/prot.faa", "/Users/katelyn/develop/fasta36/10702.1.fas", NULL };
 	query(5, argv);
 	return Py_BuildValue("[sf]", "hello", 42.0);
 }

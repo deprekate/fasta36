@@ -475,42 +475,43 @@ l1:
       */
 
       if ((!first_line || (have_lalign && !ppst->show_ident)) && cur_ares_p ) {
-	rst_p = &cur_ares_p->rst;
+	      rst_p = &cur_ares_p->rst;
       }
       else {
-	rst_p = &bbp->rst;
+	      rst_p = &bbp->rst;
       }
 
       n1 = bbp->seq->n1;
       l_score0 = rst_p->score[ppst->score_ix];
       lzscore = find_z(l_score0, rst_p->escore, n1, rst_p->comp, m_msp->pstat_void);
       if (ppst->zsflag > 20) {
-	lzscore2 = find_z(l_score0, rst_p->escore, n1, rst_p->comp, m_msp->pstat_void2);
+	      lzscore2 = find_z(l_score0, rst_p->escore, n1, rst_p->comp, m_msp->pstat_void2);
       }
       lbits = zs_to_bit(lzscore, m_msp->n0, n1);
 
       /* *********************************** */
       /* standard "The best scores are" here */
       /* *********************************** */
+	  printf("disp_percent: %f\n", disp_percent);
 
       if (!(m_msp->markx & (MX_M8OUT + MX_MBLAST2))) {
-	if (first_line) {
-	  first_line = 0;
-	  fprintf (fp, fmt,bline_p,n1tot);
-	  if (m_msp->nframe > 2) fprintf (fp, " [%d]", bbp->frame+1);
-	  else if (m_msp->nframe >= 0) fprintf(fp," [%c]",(bbp->frame > 0 ?'r':'f'));
-	}
-	else {
-	  fprintf (fp, fmt2,"\n+-");
-	}
+	      if (first_line) {
+	          first_line = 0;
+	          fprintf (fp, fmt,bline_p,n1tot);
+	          if (m_msp->nframe > 2) fprintf (fp, " [%d]", bbp->frame+1);
+	          else if (m_msp->nframe >= 0) fprintf(fp," [%c]",(bbp->frame > 0 ?'r':'f'));
+	      }
+	      else {
+	          fprintf (fp, fmt2,"\n+-");
+	      }
 
-	if (m_msp->srelv == 1) fprintf (fp, " %4d", rst_p->score[ppst->score_ix]);
-	else {
-	  if (m_msp->srelv-1 > 0) fprintf (fp, " %4d", rst_p->score[0]);
-	  if (m_msp->srelv-1 > 1 || m_msp->stages>1)
-	    fprintf (fp, " %4d", rst_p->score[1]);
-	  fprintf (fp, " %4d", rst_p->score[ppst->score_ix]);
-	}
+	      if (m_msp->srelv == 1) fprintf (fp, " %4d", rst_p->score[ppst->score_ix]);
+	      else {
+	          if (m_msp->srelv-1 > 0) fprintf (fp, " %4d", rst_p->score[0]);
+	          if (m_msp->srelv-1 > 1 || m_msp->stages>1)
+	              fprintf (fp, " %4d", rst_p->score[1]);
+	          fprintf (fp, " %4d", rst_p->score[ppst->score_ix]);
+	      }
 
 	if (ppst->zsflag>=0) { 
 	  if (m_msp->z_bits==1) {
