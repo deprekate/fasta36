@@ -47,7 +47,7 @@ governing permissions and limitations under the License.
 /********************************/
 /* extern variable declarations */
 /********************************/
-extern int
+extern struct a_struct
 query (int argc, char *argv[]);
 
 extern int fa_max_workers;
@@ -266,7 +266,7 @@ showalign (FILE *fp, unsigned char **aa0, unsigned char *aa1, int maxn,
 		const struct mngmsg *m_msg, const struct pstruct *ppst,
 		char **gstring2p, void **f_str, struct mng_thr *m_bufi_p);
 
-extern void
+extern struct a_struct
 doalign (FILE *fp, unsigned char **aa0, unsigned char *aa1, int maxn,
 		struct beststr **bestp_arr, int nbest, int qlib, 
 		const struct mngmsg *m_msg, const struct pstruct *ppst,
@@ -393,16 +393,15 @@ void fsigint();
 /* **************************************************************** */
 /* start of main() program                                          */
 /* **************************************************************** */
-	int
+struct a_struct
 query (int argc, char *argv[]) 
 {
-	/*
+	struct a_struct best_aln;
 	   printf("%d\n",argc);
 	   for(int i=0;i<argc;i++){
 	   printf("%s\n",argv[i]);
 	   }
-	   return 0;
-	   */
+	   //return best_aln ;
 	unsigned char *aa0[6], *aa0s;
 	unsigned char *aa1save;	/* aa1shuff and aa1save must be distinct */
 	unsigned char *aa1shuff, *aa1shuff_b=NULL;	/* for new unthreaded version */
@@ -593,13 +592,13 @@ query (int argc, char *argv[])
 	if (m_msg.tname[0] == '\0') {
 		if (m_msg.quiet >= 1)
 			s_abort("Query sequence undefined","");
-l1:	fputs (iprompt1, stdout);
-	fflush  (stdout);
-	if (fgets (m_msg.tname, MAX_FN, stdin) == NULL)
-		s_abort ("Unable to read query library name","");
-	m_msg.tname[MAX_FN-1]='\0';
-	if ((bp=strchr(m_msg.tname,'\n'))!=NULL) *bp='\0';
-	if (m_msg.tname[0] == '\0') goto l1;
+l1:		fputs (iprompt1, stdout);
+		fflush  (stdout);
+		if (fgets (m_msg.tname, MAX_FN, stdin) == NULL)
+			s_abort ("Unable to read query library name","");
+		m_msg.tname[MAX_FN-1]='\0';
+		if ((bp=strchr(m_msg.tname,'\n'))!=NULL) *bp='\0';
+		if (m_msg.tname[0] == '\0') goto l1;
 	}
 
 	/* **************************************************************** */
@@ -615,7 +614,7 @@ l1:	fputs (iprompt1, stdout);
 	}
 
 	/* Open query library */
-	if ((q_file_p= open_lib(q_lib_p, m_msg.qdnaseq,qascii,(m_msg.quiet==0)))==NULL) {
+	if ((q_file_p= open_lib(q_lib_p, m_msg.qdnaseq, qascii,(m_msg.quiet==0)))==NULL) {
 		fprintf(stderr,"*** ERROR [%s:%d] cannot open library %s\n",__FILE__,__LINE__, m_msg.tname);
 		exit(1);
 
@@ -625,14 +624,16 @@ l1:	fputs (iprompt1, stdout);
 	qlib = 0;
 	m_msg.q_offset = next_q_offset = 0l;
 	qlcont = 0;
-	m_msg.n0 = 
-		QGETLIB (aa0[0], MAXTST, m_msg.qtitle, sizeof(m_msg.qtitle),
-				&qseek, &qlcont,q_file_p,&m_msg.q_off);
+	m_msg.n0 = QGETLIB (aa0[0], MAXTST, m_msg.qtitle, sizeof(m_msg.qtitle),
+				&qseek, &qlcont, q_file_p, &m_msg.q_off);
+
+	m_msg.n0 = 143;
+	char *sss = "MTGLTIKQEAFCQAYIETGNASEAYRTAYAADKMKPEVVHVQACKLQDNPKIALRIKELRGEIKQRHNVTVDSLLAELEEARQKALSAETPQSSAAVAATMGKAKLVGLDKQIIDHTSSDGTMATKPTTIRLVGVDPANGKPS";
+	strcpy(aa0[0], sss);
+
 	if ((bp=strchr(m_msg.qtitle,' '))!=NULL) *bp='\0';
 	strncpy(info_qlabel,m_msg.qtitle,sizeof(info_qlabel));
-#ifdef DEBUG
-	SAFE_STRNCPY(ext_qtitle, m_msg.qtitle,sizeof(ext_qtitle));
-#endif
+	
 	if (bp != NULL) *bp = ' ';
 	info_qlabel[sizeof(info_qlabel)-1]='\0';
 
@@ -652,33 +653,7 @@ l1:	fputs (iprompt1, stdout);
 	/* if ends with ESS, remove terminal ESS */
 	if (aa0[0][m_msg.n0-1] == ESS) { m_msg.n0--; aa0[0][m_msg.n0]= '\0';}
 
-	/* check for subset */
-	if (q_file_p->opt_text[0]!='\0') {
-		if (q_file_p->opt_text[0]=='-') {
-			sstart=0; sscanf(&q_file_p->opt_text[1],"%d",&sstop);
-		}
-		else {
-			sstart = 0; sstop = -1;
-			sscanf(&q_file_p->opt_text[0],"%d-%d",&sstart,&sstop);
-			sstart--;
-			if (sstop <= 0 ) sstop = BIGNUM;
-		}
-
-		for (id=0,is=sstart; is<min(m_msg.n0,sstop); ) {
-			aa0[0][id++]=aa0[0][is++];
-		}
-		aa0[0][id]=0;
-		m_msg.n0 = min(m_msg.n0,sstop)-sstart;
-		m_msg.q_off += sstart;
-	}
-
-	/* check to see if query has been segmented */
-	if (qlcont) {
-		next_q_offset = m_msg.q_offset + m_msg.n0 - m_msg.q_overlap;
-	}
-	else {
-		next_q_offset = 0l;
-	}
+	next_q_offset = 0l;
 
 	/* this probably cannot happen any more */
 	if (m_msg.n0 > MAXTST) {
@@ -1556,9 +1531,9 @@ no_links:
 		/*                     Query: %s length=%d                          */
 		/* **************************************************************** */
 		//print_header3(stdout, qlib, &m_msg, &pst);
-		
-		showbest(stdout, aa0, aa1save, maxn, &bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
-				qtt.entries, &m_msg, &pst, m_msg.db, info_gstring2p, f_str);
+
+		//showbest(stdout, aa0, aa1save, maxn, &bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
+		//		qtt.entries, &m_msg, &pst, m_msg.db, info_gstring2p, f_str);
 
 		m_msp_to_markx(&markx_save, &m_msg);
 		t_quiet = m_msg.quiet;
@@ -1566,17 +1541,17 @@ no_links:
 
 		/* set copies of showbest to alternative files */
 		/*
-		for (cur_markx = m_msg.markx_list; cur_markx; cur_markx = cur_markx->next) {
-			if (cur_markx->out_fd == NULL) continue;
-			markx_to_m_msp(&m_msg, cur_markx);
-			if (!(m_msg.markx & (MX_MBLAST2+MX_M8OUT)) && 
-					(m_msg.annot1_sname[0] || m_msg.annot0_sname[0])) 
-				print_annot_header(cur_markx->out_fd, &m_msg);
-			print_header3(cur_markx->out_fd, qlib, &m_msg, &pst);
-			showbest(cur_markx->out_fd, aa0, aa1save, maxn, &bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
-					qtt.entries, &m_msg, &pst, m_msg.db, info_gstring2p, f_str);
-		}
-		*/
+		   for (cur_markx = m_msg.markx_list; cur_markx; cur_markx = cur_markx->next) {
+		   if (cur_markx->out_fd == NULL) continue;
+		   markx_to_m_msp(&m_msg, cur_markx);
+		   if (!(m_msg.markx & (MX_MBLAST2+MX_M8OUT)) && 
+		   (m_msg.annot1_sname[0] || m_msg.annot0_sname[0])) 
+		   print_annot_header(cur_markx->out_fd, &m_msg);
+		   print_header3(cur_markx->out_fd, qlib, &m_msg, &pst);
+		   showbest(cur_markx->out_fd, aa0, aa1save, maxn, &bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
+		   qtt.entries, &m_msg, &pst, m_msg.db, info_gstring2p, f_str);
+		   }
+		   */
 		m_msg.quiet = t_quiet;
 		markx_to_m_msp(&m_msg, &markx_save);
 
@@ -1584,23 +1559,23 @@ no_links:
 		if (m_msg.nshow > 0 && m_msg.ashow != 0) {
 
 			/*
-			rline[0]='N';
-			if (m_msg.quiet==0){
-				printf(" Display alignments also? (y/n) [n] "); fflush(stdout);
-				if (fgets(rline,sizeof(rline),stdin)==NULL) goto end_l;
-			}
-			else rline[0]='Y';
-			if (toupper((int)rline[0])=='Y') {
-				if (m_msg.quiet==0 && m_msg.do_showbest) {
-					printf(" number of alignments [%d]? ",m_msg.nshow);
-					fflush(stdout);
-					if (fgets(rline,sizeof(rline),stdin)==NULL) goto end_l;
-					if (rline[0]!=0) sscanf(rline,"%d",&utmp);
-					if (utmp == 0) utmp = -1;
-					m_msg.ashow=min(utmp,m_msg.nshow);
-				}
-			}
-			*/
+			   rline[0]='N';
+			   if (m_msg.quiet==0){
+			   printf(" Display alignments also? (y/n) [n] "); fflush(stdout);
+			   if (fgets(rline,sizeof(rline),stdin)==NULL) goto end_l;
+			   }
+			   else rline[0]='Y';
+			   if (toupper((int)rline[0])=='Y') {
+			   if (m_msg.quiet==0 && m_msg.do_showbest) {
+			   printf(" number of alignments [%d]? ",m_msg.nshow);
+			   fflush(stdout);
+			   if (fgets(rline,sizeof(rline),stdin)==NULL) goto end_l;
+			   if (rline[0]!=0) sscanf(rline,"%d",&utmp);
+			   if (utmp == 0) utmp = -1;
+			   m_msg.ashow=min(utmp,m_msg.nshow);
+			   }
+			   }
+			   */
 			/* **************************************************************** */
 			/* print_header4() : showalign alignment transition                 */
 			/* >>>query vs library for -m 9, -m 10                              */
@@ -1610,18 +1585,16 @@ no_links:
 			/* **************************************************************** */
 			//print_header4(outfd, info_qlabel, argv_line, info_gstring3, info_hstring_p, &m_msg, &pst);
 			printf("BAR\n");
-			printf("var: %i \n", m_msg.a_res.nres);
+			//printf("HERE\n") ; exit(0);
 			//bestp_arr[0]->a_res->index = 42;	
 			//#printf("var: %i\n", bestp_arr[0]->a_res->index);	
-			doalign (outfd, aa0, aa1save, maxn,
+			best_aln = doalign (outfd, aa0, aa1save, maxn,
 					&bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
 					qtt.entries, &m_msg, &pst, info_gstring2p, f_str, &m_bufi);
-			printf("COD\n");
-
+			return best_aln;
 			fflush(outfd);
 		}
 
-		printf("HERE\n") ; exit(0);
 		m_msp_to_markx(&markx_save, &m_msg);
 		for (cur_markx = m_msg.markx_list; cur_markx; cur_markx=cur_markx->next) {
 			if (cur_markx->out_fd == NULL) continue;
@@ -1894,12 +1867,6 @@ next_query:
 
 	tdone = s_time();
 
-#ifdef DEBUG
-	fprintf(stderr,"[*** comp_lib9.c***] seqr_chains: %d [%d]; aa1b_buffer: %ld [%ld] blocks (lost: %ld); using memory:%d\n",
-			m_msg.cur_seqr_cnt, m_bufi.max_work_buf,
-			getlib_info->tot_memK,getlib_info->max_memK, getlib_info->lost_memK,
-			getlib_info->use_memory);
-#endif
 
 	/* **************************************************************** */
 	/* final summary text                                               */

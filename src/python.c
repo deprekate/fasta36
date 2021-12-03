@@ -2,11 +2,16 @@
 //#include <limits.h>
 #include <Python.h>
 
+#include "defs.h"
+#include "msg.h"
+#include "structs.h"
+#include "param.h"
 
-extern void show_help(char *, int pgm_id);
-int query (int argc, char *argv[]);
-int main (int argc, char *argv[]);
 
+struct a_struct query (int argc, char *argv[]);
+//int main (int argc, char *argv[]);
+
+/* THESE ARE NOT USED YET BUT LEFT FOR FUTURE 
 typedef struct {
 	PyObject_HEAD
 	const unsigned char* dna;
@@ -62,7 +67,7 @@ static PyObject * get_windows(PyObject *self, PyObject *args){
 	for (int i=0; p->dna[i] ; i++){
 	}
 
-	/* I'm not sure if it's strictly necessary. */
+	// I'm not sure if it's strictly necessary. 
 	if (!PyObject_Init((PyObject *)p, &IterableType)) {
 		Py_DECREF(p);
 		return NULL;
@@ -70,17 +75,24 @@ static PyObject * get_windows(PyObject *self, PyObject *args){
 
 	return (PyObject *)p;
 }
-
-static PyObject* search(PyObject *self, PyObject *args, PyObject *kwargs){
-	// could not figure out how to dump args directly into a std::string
-	char *seq_char;
-	static char *kwlist[] = {"seq_char", NULL};
-	if(!PyArg_ParseTuple(args, "s", kwlist, &seq_char )) {
+*/
+static PyObject* best_pid(PyObject *self, PyObject *args, PyObject *kwargs){
+	char *seq;
+	char *fname;
+	char *b = "1";
+	struct a_struct best_aln;
+	static char *keywords[] = {"", "", "b", NULL};
+	if(!PyArg_ParseTupleAndKeywords(args, kwargs,
+									"ss|i", keywords,
+									&seq, &fname,
+									b
+									)) {
 		return NULL;
 	}
-	char *argv[] = { "./dummy", "-b", "1", "/Users/katelyn/develop/fasta36/prot.faa", "/Users/katelyn/develop/fasta36/10702.1.fas", NULL };
-	query(5, argv);
-	return Py_BuildValue("[sf]", "hello", 42.0);
+	printf("%s and %s \n", seq, fname);
+	char *argv[] = { "./fasta36", "-x", "acgt", "/Users/katelyn/develop/fasta36/prot.faa", fname, NULL };
+	best_aln = query(5, argv);
+	return Py_BuildValue("f", best_aln.pid);
 }
 
 // Module method definitions
@@ -90,8 +102,8 @@ static PyObject* no_args(PyObject *self, PyObject *args) {
 
 // Method definition object for this extension, these argumens mean:
 static PyMethodDef fasta36_methods[] = { 
-	{"get_windows",         get_windows, METH_VARARGS,                 "Empty for now, can be used to yield a python iterator."},  
-	{"search",        (PyCFunction)  search, METH_VARARGS | METH_KEYWORDS, "Calculates the minimum free energy of the sequence."},  
+	//{"get_windows",         get_windows, METH_VARARGS,                 "Empty for now, can be used to yield a python iterator."},  
+	{"best_pid",        (PyCFunction)  best_pid, METH_VARARGS | METH_KEYWORDS, "Calculates the minimum free energy of the sequence."},  
 	{"no_args",                 no_args, METH_NOARGS,                  "Empty for now."},  
 	{NULL, NULL, 0, NULL}
 };

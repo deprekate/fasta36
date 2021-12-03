@@ -492,7 +492,6 @@ l1:
 			/* *********************************** */
 			/* standard "The best scores are" here */
 			/* *********************************** */
-			printf("disp_percent: %f\n", disp_percent);
 
 			if (!(m_msp->markx & (MX_M8OUT + MX_MBLAST2))) {
 				//printf("HERE0\n");

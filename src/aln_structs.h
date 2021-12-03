@@ -18,6 +18,7 @@ struct a_struct {
   int llrev, llfact, llmult;
   int frame;
 
+  float pid;
   int nident, nsim, npos, nmismatch, lc, ngap_q, ngap_l, nfs;	/* number of identities, gaps in q, l */
   long q_start_off, q_end_off;	/* used in -m 9 calculate for full segment offset */
   long l_start_off, l_end_off;	
