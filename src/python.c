@@ -90,8 +90,9 @@ static PyObject* best_pid(PyObject *self, PyObject *args, PyObject *kwargs){
 		return NULL;
 	}
 	printf("%s and %s \n", seq, fname);
-	char *argv[] = { "./fasta36", "-x", seq, "\0", fname, NULL };
-	best_aln = query(5, argv);
+	//char *argv[] = { "./fasta36", "-x", seq, "\0", fname, NULL };
+	char *argv[] = { "./fasta36", "\0", fname, NULL };
+	best_aln = query(3, argv, seq);
 	printf("after\n");
 	return Py_BuildValue("f", best_aln.pid);
 }

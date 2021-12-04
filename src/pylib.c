@@ -552,6 +552,7 @@ query (int argc, char *argv[])
 	fset_vars(&m_msg, &pst);
 	/* second initialization - get commmand line arguments */
 	initenv (argc, argv, &m_msg, &pst, &aa0[0]);
+	exit(0);
 
 #ifndef PCOMPLIB
 #ifdef COMP_THR

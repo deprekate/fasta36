@@ -474,10 +474,10 @@ void initenv (int argc, char **argv, struct mngmsg *m_msp,
 						  if (!m_msp->aln.llcntx_set) m_msp->aln.llcntx = m_msp->aln.llen/2;
 						  llen_set = 1;
 						  break;
-				case 'x':
-						  strncpy(ppst->qstring,optarg,MAXTST);
-						  ppst->qstring[MAXTST-1]='\0';
-						  break;
+				//case 'x':
+				//		  strncpy(ppst->qstring,optarg,MAXTST);
+				//		  ppst->qstring[MAXTST-1]='\0';
+				//		  break;
 				case 'Z':
 						  sscanf(optarg,"%ld",&ppst->zdb_size);
 						  ppst->zdb_size_set = 1;
