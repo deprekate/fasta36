@@ -21,7 +21,7 @@ def get_version():
 
 
 #os.environ["CC"] = "gcc"
-cc = ["-O", "-g", "-msse2"]
+cc = ["-O", "-g", "-msse2", "-fPIC"]
 cflags = ["-DSHOW_HELP", "-DSHOWSIM", "-DUNIX", "-DTIMES", "-DHZ=100", "-DTHR_EXIT=pthread_exit", "-DM10_CONS", "-DUSE_MMAP", "-DUSE_FSEEKO", "-DHAS_INTTYPES", "-DSAMP_STATS", "-DPGM_DOC", "-DBIG_LIB64"]
 hflags = ['-o']
 lflags = ['-lm']

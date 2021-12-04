@@ -552,7 +552,6 @@ query (int argc, char *argv[], char *qstring)
 	fset_vars(&m_msg, &pst);
 	/* second initialization - get commmand line arguments */
 	initenv (argc, argv, &m_msg, &pst, &aa0[0]);
-	exit(0);
 
 #ifndef PCOMPLIB
 #ifdef COMP_THR
@@ -601,7 +600,7 @@ query (int argc, char *argv[], char *qstring)
 	else {
 		q_lib_p->file_name = m_msg.tname;
 	}
-	q_lib_p->qstring = pst.qstring;
+	q_lib_p->qstring = qstring;
 	/* Open query library */
 	//if (m_msg.tname[0] == '\0') {
 	//	if ((q_file_p= make_lib(q_lib_p, m_msg.qdnaseq, qascii,(m_msg.quiet==0)))==NULL) {
