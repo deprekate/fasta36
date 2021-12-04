@@ -48,7 +48,7 @@ governing permissions and limitations under the License.
 /* extern variable declarations */
 /********************************/
 extern struct a_struct
-query (int argc, char *argv[]);
+query (int argc, char *argv[], char *qstring);
 
 extern int fa_max_workers;
 extern char *prog_func;		/* function label */
