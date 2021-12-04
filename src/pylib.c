@@ -395,7 +395,7 @@ void fsigint();
 /* start of main() program                                          */
 /* **************************************************************** */
 struct a_struct
-query (int argc, char *argv[]) 
+query (int argc, char *argv[], char *qstring) 
 {
 	struct a_struct best_aln;
 	   printf("%d\n",argc);
