@@ -1272,8 +1272,6 @@ f_getopt (char copt, char *optarg,
     sscanf (optarg,"%d",&m_msg->aln.llcntx);
     m_msg->aln.llcntx_set = 1;
     break;
-  case 'x':
-    SAFE_STRNCPY (ppst->qseq, optarg, MAX_FN);
   case 'X':
     parse_ext_opts(optarg, pgm_id, m_msg, ppst);
     break;

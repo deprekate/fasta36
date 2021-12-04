@@ -123,7 +123,7 @@ struct pstruct		/* parameters */
   int pgm_id;
   int pseudocts;
   int shuff_node;
-  char *qseq;
+  char *qstring;
   union {
     struct fastr fa;
     struct prostr pr;

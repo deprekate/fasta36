@@ -195,4 +195,5 @@ struct lib_struct {
   struct lmf_str *acc_file_p;
   struct lmf_str *m_file_p;	/* magic *m_file_p for reading */
   struct lib_struct *next;	/* next in the list */  
+  char *qstring;
 };

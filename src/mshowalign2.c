@@ -524,7 +524,6 @@ void showalign (FILE *fp, unsigned char **aa0, unsigned char *aa1save, int maxn,
 			NULL_dyn_string(annot_var_dyn);
 			NULL_dyn_string(align_code_dyn);
 
-			printf("nidenty: %i\n", l_aln_p->nident);
 			nc=calc_cons_a(aa0[bbp->frame],m_msp->n0, aa1, n1,
 					&lc,l_aln_p, cur_ares_p, ppst, 
 					seqc0, seqc1, seqca, cumm_seq_score,
@@ -536,7 +535,6 @@ void showalign (FILE *fp, unsigned char **aa0, unsigned char *aa1save, int maxn,
 					f_str[bbp->frame],
 					m_msp->pstat_void
 					);
-			printf("nnidenty: %i\n", l_aln_p->nident);
 
 			if (cur_ares_p->score_delta > 0) score_delta -= cur_ares_p->score_delta;
 			

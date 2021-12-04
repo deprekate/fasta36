@@ -57,6 +57,7 @@ extern char *verstr, *iprompt0, *iprompt1, *iprompt2, *refstr;
 /********************************/
 /*extern function declarations  */
 /********************************/
+struct lmf_str *make_lib(struct lib_struct *lib_p, int dnaseq, int *sascii, int quiet);
 struct lmf_str *open_lib(struct lib_struct *lib_p, int dnaseq, int *sascii, int quiet);
 
 void
@@ -567,7 +568,6 @@ query (int argc, char *argv[])
 	ttscan = ttdisp = 0;
 	tstart = tscan = s_time();
 	tdstart = time(NULL);
-
 	/* Allocate space for the query and library sequences */
 	/* pad aa0[] with an extra SEQ_PAD chars for ALTIVEC padding */
 	if (aa0[0]==NULL) {
@@ -589,18 +589,6 @@ query (int argc, char *argv[])
 	//print_header1(stdout, argv_line, &m_msg, &pst);
 
 	/* get query information */
-	if (m_msg.tname[0] == '\0') {
-		if (m_msg.quiet >= 1)
-			s_abort("Query sequence undefined","");
-l1:		fputs (iprompt1, stdout);
-		fflush  (stdout);
-		if (fgets (m_msg.tname, MAX_FN, stdin) == NULL)
-			s_abort ("Unable to read query library name","");
-		m_msg.tname[MAX_FN-1]='\0';
-		if ((bp=strchr(m_msg.tname,'\n'))!=NULL) *bp='\0';
-		if (m_msg.tname[0] == '\0') goto l1;
-	}
-
 	/* **************************************************************** */
 	/* (1) open the query library; 
 	   (2) get a sequence;
@@ -612,25 +600,27 @@ l1:		fputs (iprompt1, stdout);
 	else {
 		q_lib_p->file_name = m_msg.tname;
 	}
-
+	q_lib_p->qstring = pst.qstring;
 	/* Open query library */
+	//if (m_msg.tname[0] == '\0') {
+	//	if ((q_file_p= make_lib(q_lib_p, m_msg.qdnaseq, qascii,(m_msg.quiet==0)))==NULL) {
+	//		fprintf(stderr,"*** ERROR cannot create query library \n");
+	//	}
 	if ((q_file_p= open_lib(q_lib_p, m_msg.qdnaseq, qascii,(m_msg.quiet==0)))==NULL) {
 		fprintf(stderr,"*** ERROR [%s:%d] cannot open library %s\n",__FILE__,__LINE__, m_msg.tname);
 		exit(1);
-
 		/*     s_abort(" cannot open library ",m_msg.tname); */
 	}
+
 	/* Fetch first sequence */
 	qlib = 0;
 	m_msg.q_offset = next_q_offset = 0l;
 	qlcont = 0;
 	m_msg.n0 = QGETLIB (aa0[0], MAXTST, m_msg.qtitle, sizeof(m_msg.qtitle),
 				&qseek, &qlcont, q_file_p, &m_msg.q_off);
-
-	m_msg.n0 = 143;
-	char *sss = "MTGLTIKQEAFCQAYIETGNASEAYRTAYAADKMKPEVVHVQACKLQDNPKIALRIKELRGEIKQRHNVTVDSLLAELEEARQKALSAETPQSSAAVAATMGKAKLVGLDKQIIDHTSSDGTMATKPTTIRLVGVDPANGKPS";
-	strcpy(aa0[0], sss);
-
+	//strcpy(aa0[0], pst.qseq);
+	printf("aa0: %s\n", aa0[0]);
+	printf("len: %i\n", m_msg.n0);
 	if ((bp=strchr(m_msg.qtitle,' '))!=NULL) *bp='\0';
 	strncpy(info_qlabel,m_msg.qtitle,sizeof(info_qlabel));
 	
@@ -1584,10 +1574,6 @@ no_links:
 			/*  not sent to stdout if outfile specified                         */
 			/* **************************************************************** */
 			//print_header4(outfd, info_qlabel, argv_line, info_gstring3, info_hstring_p, &m_msg, &pst);
-			printf("BAR\n");
-			//printf("HERE\n") ; exit(0);
-			//bestp_arr[0]->a_res->index = 42;	
-			//#printf("var: %i\n", bestp_arr[0]->a_res->index);	
 			best_aln = doalign (outfd, aa0, aa1save, maxn,
 					&bestp_arr[m_msg.nskip], nbest-m_msg.nskip,
 					qtt.entries, &m_msg, &pst, info_gstring2p, f_str, &m_bufi);

@@ -27,13 +27,13 @@ hflags = ['-o']
 lflags = ['-lm']
 #compile_args = ["-Wno-sign-compare -std=c++11"] # -Wall -O2"]
 
-filenames = {'pylib' : [],
+filenames = {'pylib' : [], 'doalign2' : [], # these are for new python code
 			 'comp_lib9' : ['-DCOMP_MLIB'], 'compacc2e' : ['-DCOMP_MLIB'],
 			 'initfa' : ['-DFASTA'], 'cal_cons2' : ['-DFASTA'],
 			 'scaleswn' : ['-DLOCAL_SCORE'],
 			 'wm_align' : [], 'dropnfa' : [], 'mmgetaa' : [], 'build_ares' : [], 'doinit' : [], 'mshowbest' : [],
 			 'nmgetlib' : [], 'c_dispn' : [], 'lib_sel' : [], 'ncbl2_mlib' : [], 'karlin' : [], 're_getlib' : [],
-			 'url_subs' : [], 'mrandom' : [], 'apam' : [], 'htime' : [], 'mshowalign2' : [], 'doalign2' : []
+			 'url_subs' : [], 'mrandom' : [], 'apam' : [], 'htime' : [], 'mshowalign2' : []
 			 }
 
 def extension(name, cflags, lflags):

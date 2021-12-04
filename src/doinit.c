@@ -475,6 +475,8 @@ void initenv (int argc, char **argv, struct mngmsg *m_msp,
 						  llen_set = 1;
 						  break;
 				case 'x':
+						  strncpy(ppst->qstring,optarg,MAXTST);
+						  ppst->qstring[MAXTST-1]='\0';
 						  break;
 				case 'Z':
 						  sscanf(optarg,"%ld",&ppst->zdb_size);
@@ -485,7 +487,6 @@ void initenv (int argc, char **argv, struct mngmsg *m_msp,
 			f_getopt (copt, optarg, m_msp, ppst);
 		}
 	}
-	printf("HERE\n"); exit(0);
 	optind--;
 
 	if (!markx_set || !(m_msp->markx & (MX_ATYPE+MX_ANNOT_COORD+MX_ANNOT_MID))) {

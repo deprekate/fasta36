@@ -195,9 +195,10 @@ open_lib(struct lib_struct *lib_p, int ldnaseq, int *sascii, int outtty){
 	} else if (lib_p->file_name[0] =='!') {  /* check for script */
 		lib_type = lib_p->lib_type = ACC_SCRIPT;
 	}
-
-	/* check for stdin indicator '-' or '@'  (or ACC_SCRIPT) */
-	if (lib_p->file_name[0] == '-' || lib_p->file_name[0] == '@' || lib_type == ACC_SCRIPT) {
+	
+	if (lib_p->file_name[0] == '\0') {
+		use_stdin = 1;
+	} else if (lib_p->file_name[0] == '-' || lib_p->file_name[0] == '@' || lib_type == ACC_SCRIPT) {
 		use_stdin = 1;
 	} else use_stdin=0;
 
@@ -220,15 +221,21 @@ l1:
 	opnflg = 0;
 	if (lib_type<=LASTTXT) {
 		if (!use_stdin) {
-			printf("not stdin\n");
 			opnflg=((libf=fopen(lib_p->file_name,RBSTR))!=NULL);
+		} else if (lib_p->file_name[0] == '\0') {
+    		libf = fmemopen(lib_p->qstring, strlen (lib_p->qstring), "r");
+    		if (libf == NULL){
+				fprintf(stderr,"*** ERROR cannot open query stream");
+				exit(1);
+			}
+			lib_p->file_name = alloc_file_name("STRING");
+			opnflg=1;
 		} else {
 			libf=stdin;
 			lib_p->file_name = alloc_file_name("STDIN");
 			opnflg=1;
 		}
 	}
-	printf("\nLOWER:\n");
 	if (!opnflg) {	/* here if open failed */
 		if (outtty) {
 			fprintf(stderr,"\n cannot open %s library\n",lib_p->file_name);
@@ -277,7 +284,6 @@ l1:
 		m_fptr->lib_aa = (ldnaseq==SEQT_PROT);
 	}
 	last_m_fptr = m_fptr;
-	printf("here\n");
 
 #ifdef USE_MMAP
 	/* check for possible mmap()ed files */
