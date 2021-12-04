@@ -8,7 +8,7 @@
 #include "param.h"
 
 
-struct a_struct query (int argc, char *argv[]);
+struct a_struct query (int argc, char *argv[], char *qstring);
 //int main (int argc, char *argv[]);
 
 /* THESE ARE NOT USED YET BUT LEFT FOR FUTURE 
